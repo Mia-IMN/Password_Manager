@@ -1,6 +1,7 @@
 import random
 from random import randint
 from tkinter import *
+from tkinter import messagebox
 
 BG = "#EEEEEE"
 PURPLE = "#3B1E54"
@@ -10,12 +11,14 @@ def save_password():
     website = website_entry.get()
     username = username_entry.get()
     password = password_entry.get()
-    
+
     with open("data.txt", mode="a") as data_file:
         data_file.write(f"{website} | {username} | {password}\n")
 
     website_entry.delete(0, END)
     password_entry.delete(0, END)
+
+    messagebox.showinfo(title="Password Manager", message="Saved!")
 
     website_entry.focus()
 
