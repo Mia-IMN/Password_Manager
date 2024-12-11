@@ -2,6 +2,7 @@ import pyperclip
 from random import randint, shuffle
 from tkinter import *
 from tkinter import messagebox
+import json
 
 BG = "#EEEEEE"
 PURPLE = "#3B1E54"
@@ -11,14 +12,25 @@ def save_password():
     website = website_entry.get()
     username = username_entry.get()
     password = password_entry.get()
+    new_dict = {
+        "website": {
+            "username/email": username,
+            "password": password
+        }
+    }
 
-    with open("data.txt", mode="a") as data_file:
-        data_file.write(f"{website} | {username} | {password}\n")
+    if len(website) == 0 or len(password) == 0:
+        messagebox.showerror(title="Oops", message="Please make sure you don't have any fields empty")
+        is_ok = False
+    else:
+        is_ok = messagebox.askyesno(title=website,
+                            message=f"Here's the details you've entered\n\nWebsite: {website}\nPassword: {password}\nIs it okay to save?")
 
-    website_entry.delete(0, END)
-    password_entry.delete(0, END)
-
-    messagebox.showinfo(title="Password Manager", message="Saved!")
+    if is_ok:
+        with open("data.json", "w") as data_file:
+            json.dump(new_dict, data_file, indent=4)
+        website_entry.delete(0, END)
+        password_entry.delete(0, END)
 
     website_entry.focus()
 
@@ -54,9 +66,12 @@ website_label = Label(text="Website:", font=("arial", 12, "normal"), bg=BG, fg=P
 website_label.config(pady=5)
 website_label.grid(column=0, row=2)
 
-website_entry = Entry(width=59, font=("arial", 10, "normal"))
+website_entry = Entry(width=43, font=("arial", 10, "normal"))
 website_entry.focus()
-website_entry.grid(column=1, row=2, columnspan=2)
+website_entry.grid(column=1, row=2)
+
+search_button = Button(text="Search", width=15, fg=BG, bg=PURPLE, command=save_password)
+search_button.grid(row=2, column=2)
 
 username_label = Label(text="Email/Username:", font=("arial", 12, "normal"), bg=BG, fg=PURPLE, pady=10)
 username_label.grid(column=0, row=3)
@@ -73,7 +88,6 @@ password_entry.grid(column=1, row=4)
 
 generate_button = Button(text="Generate Password", width=15, fg=BG, bg=LIGHT_PURPLE, command=random_password)
 generate_button.grid(column=2, row=4)
-generate_button.grid_configure()
 
 add_button = Button(text="Add", width=42, fg=BG, bg=PURPLE, command=save_password)
 add_button.grid(row=6, column=1)
