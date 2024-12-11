@@ -1,5 +1,5 @@
-import random
-from random import randint
+import pyperclip
+from random import randint, shuffle
 from tkinter import *
 from tkinter import messagebox
 
@@ -26,14 +26,16 @@ def random_password():
 
     password_uppercase = [chr(randint(65, 90)) for _ in range(6, 12)]
     password_lowercase = [chr(randint(97, 122)) for _ in range(5, 12)]
-    password_num = [chr(randint(48, 57)) for _ in range(2, 4)]
-    password_symbol = [chr(randint(35, 38)) for _ in range(2, 4)]
+    password_num = [chr(randint(48, 57)) for _ in range(1, 4)]
+    password_symbol = [chr(randint(35, 38)) for _ in range(1, 3)]
 
     password = password_uppercase + password_lowercase + password_num + password_symbol
-    random.shuffle(password)
+    shuffle(password)
     new_password = ''.join(password)
     password_entry.delete(0, END)
     password_entry.insert(0, new_password)
+
+    pyperclip.copy(new_password)
 
 window = Tk()
 window.title("Password Manager")
