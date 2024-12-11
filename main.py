@@ -21,14 +21,15 @@ def save_password():
 
     if len(website) == 0 or len(password) == 0:
         messagebox.showerror(title="Oops", message="Please make sure you don't have any fields empty")
-        is_ok = False
     else:
-        is_ok = messagebox.askyesno(title=website,
-                            message=f"Here's the details you've entered\n\nWebsite: {website}\nPassword: {password}\nIs it okay to save?")
+        with open("data.json", "r") as data_file:
+            data = json.load(data_file)
+            data.update(new_dict)
 
-    if is_ok:
-        with open("data.json", "a") as data_file:
-            json.dump(new_dict, data_file, indent=4)
+        with open("data.json", "w") as data_file:
+            json.dump(data, data_file, indent=4)
+
+        messagebox.showinfo(title=website, message="Added!")
         website_entry.delete(0, END)
         password_entry.delete(0, END)
 
@@ -37,19 +38,21 @@ def save_password():
 def search():
     website = website_entry.get()
 
+    if len(website) == 0:
+        messagebox.showerror(title="Error", message="Please make sure you don't have the website field empty")
+
     with open("data.json", "r") as data_file:
         data = json.load(data_file)
-        for datum in data:
+        username = [data[datum]["username"] for datum in data if datum == website]
+        password = [data[datum]["password"] for datum in data if datum == website]
 
-            if datum == website:
-                x = data[datum]["username"]
-                y = data[datum]["password"]
+        if len(username) == 0 or len(password) == 0:
+            messagebox.showerror(title="Error", message=f"No details found for {website}")
+        else:
+            messagebox.showinfo(title=website, message=f"Username: {username[0]}\nPassword: {password[0]}")
 
-                messagebox.showinfo(title=website, message=f"Username: {x}\nPassword: {y}")
-
-
-    if len(website) == 0:
-        messagebox.showerror(title="Error", message="Please add website name to search details for")
+    website_entry.delete(0, END)
+    website_entry.focus()
 
 def random_password():
 
