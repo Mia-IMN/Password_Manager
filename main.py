@@ -24,25 +24,16 @@ def save_password():
 
 def random_password():
 
-    random_length = randint(10, 15)
-    password = []
-    for num in range(random_length):
-        if random_length - num > 10:
-            random_alpha = chr(randint(65, 90))
-            password.append(random_alpha)
-        if random_length - num < 10:
-            random_lower = chr(randint(97, 122))
-            password.append(random_lower)
-        if random_length - num < 5:
-            random_num = chr(randint(48, 57))
-            password.append(random_num)
-        if random_length - num < 3:
-            random_special = chr(randint(35, 38))
-            password.append(random_special)
+    password_uppercase = [chr(randint(65, 90)) for _ in range(6, 12)]
+    password_lowercase = [chr(randint(97, 122)) for _ in range(5, 12)]
+    password_num = [chr(randint(48, 57)) for _ in range(2, 4)]
+    password_symbol = [chr(randint(35, 38)) for _ in range(2, 4)]
 
-    psswrd = ''.join(random.sample(password, len(password)))
+    password = password_uppercase + password_lowercase + password_num + password_symbol
+    random.shuffle(password)
+    new_password = ''.join(password)
     password_entry.delete(0, END)
-    password_entry.insert(0, psswrd)
+    password_entry.insert(0, new_password)
 
 window = Tk()
 window.title("Password Manager")
