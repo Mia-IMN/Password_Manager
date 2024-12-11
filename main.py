@@ -13,8 +13,8 @@ def save_password():
     username = username_entry.get()
     password = password_entry.get()
     new_dict = {
-        "website": {
-            "username/email": username,
+        website: {
+            "username": username,
             "password": password
         }
     }
@@ -27,12 +27,29 @@ def save_password():
                             message=f"Here's the details you've entered\n\nWebsite: {website}\nPassword: {password}\nIs it okay to save?")
 
     if is_ok:
-        with open("data.json", "w") as data_file:
+        with open("data.json", "a") as data_file:
             json.dump(new_dict, data_file, indent=4)
         website_entry.delete(0, END)
         password_entry.delete(0, END)
 
     website_entry.focus()
+
+def search():
+    website = website_entry.get()
+
+    with open("data.json", "r") as data_file:
+        data = json.load(data_file)
+        for datum in data:
+
+            if datum == website:
+                x = data[datum]["username"]
+                y = data[datum]["password"]
+
+                messagebox.showinfo(title=website, message=f"Username: {x}\nPassword: {y}")
+
+
+    if len(website) == 0:
+        messagebox.showerror(title="Error", message="Please add website name to search details for")
 
 def random_password():
 
@@ -70,7 +87,7 @@ website_entry = Entry(width=43, font=("arial", 10, "normal"))
 website_entry.focus()
 website_entry.grid(column=1, row=2)
 
-search_button = Button(text="Search", width=15, fg=BG, bg=PURPLE, command=save_password)
+search_button = Button(text="Search", width=15, fg=BG, bg=PURPLE, command=search)
 search_button.grid(row=2, column=2)
 
 username_label = Label(text="Email/Username:", font=("arial", 12, "normal"), bg=BG, fg=PURPLE, pady=10)
