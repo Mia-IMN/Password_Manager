@@ -22,37 +22,60 @@ def save_password():
     if len(website) == 0 or len(password) == 0:
         messagebox.showerror(title="Oops", message="Please make sure you don't have any fields empty")
     else:
-        with open("data.json", "r") as data_file:
-            data = json.load(data_file)
-            data.update(new_dict)
+        try:
+            with open("data.json", "r") as data_file:
+                data = json.load(data_file)
+                data.update(new_dict)
 
-        with open("data.json", "w") as data_file:
-            json.dump(data, data_file, indent=4)
 
-        messagebox.showinfo(title=website, message="Added!")
-        website_entry.delete(0, END)
-        password_entry.delete(0, END)
+        except FileNotFoundError:
+            with open("data.json", "w") as data_file:
+                json.dump(new_dict, data_file, indent=4)
 
-    website_entry.focus()
+            messagebox.showinfo(title=website, message="Website details added!")
+
+        else:
+            with open("data.json", "w") as data_file:
+                json.dump(data, data_file, indent=4)
+
+            messagebox.showinfo(title=website, message="Website details added!")
+
+        finally:
+            website_entry.delete(0, END)
+            password_entry.delete(0, END)
+
+            website_entry.focus()
 
 def search():
     website = website_entry.get()
+    usernameEntry = username_entry.get()
 
     if len(website) == 0:
+        raise SyntaxError
+
+    try:
+        with open("data.json", "r") as data_file:
+            data = json.load(data_file)
+
+    except SyntaxError:
         messagebox.showerror(title="Error", message="Please make sure you don't have the website field empty")
 
-    with open("data.json", "r") as data_file:
-        data = json.load(data_file)
+    except FileNotFoundError:
+        messagebox.showerror(title="Error", message="Please add website details to use the search functionality")
+
+    else:
         username = [data[datum]["username"] for datum in data if datum == website]
         password = [data[datum]["password"] for datum in data if datum == website]
 
-        if len(username) == 0 or len(password) == 0:
+        #fix this error
+        if usernameEntry:
             messagebox.showerror(title="Error", message=f"No details found for {website}")
         else:
             messagebox.showinfo(title=website, message=f"Username: {username[0]}\nPassword: {password[0]}")
 
-    website_entry.delete(0, END)
-    website_entry.focus()
+    finally:
+        website_entry.delete(0, END)
+        website_entry.focus()
 
 def random_password():
 
