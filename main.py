@@ -48,14 +48,15 @@ def save_password():
 
 def search():
     website = website_entry.get()
-    usernameEntry = username_entry.get()
 
-    if len(website) == 0:
-        raise SyntaxError
+
 
     try:
         with open("data.json", "r") as data_file:
             data = json.load(data_file)
+
+        if len(website) == 0:
+            raise SyntaxError
 
     except SyntaxError:
         messagebox.showerror(title="Error", message="Please make sure you don't have the website field empty")
@@ -67,8 +68,8 @@ def search():
         username = [data[datum]["username"] for datum in data if datum == website]
         password = [data[datum]["password"] for datum in data if datum == website]
 
-        #fix this error
-        if usernameEntry:
+
+        if len(username) == 0:
             messagebox.showerror(title="Error", message=f"No details found for {website}")
         else:
             messagebox.showinfo(title=website, message=f"Username: {username[0]}\nPassword: {password[0]}")
