@@ -9,7 +9,7 @@ PURPLE = "#3B1E54"
 LIGHT_PURPLE = "#9B7EBD"
 
 def save_password():
-    website = website_entry.get()
+    website = website_entry.get().title()
     username = username_entry.get()
     password = password_entry.get()
     new_dict = {
@@ -25,8 +25,6 @@ def save_password():
         try:
             with open("data.json", "r") as data_file:
                 data = json.load(data_file)
-                data.update(new_dict)
-
 
         except FileNotFoundError:
             with open("data.json", "w") as data_file:
@@ -35,10 +33,14 @@ def save_password():
             messagebox.showinfo(title=website, message="Website details added!")
 
         else:
-            with open("data.json", "w") as data_file:
-                json.dump(data, data_file, indent=4)
+            if website in data:
+                messagebox.askokcancel(title="Oops", message="Details for this website already exist!\nSearch website details instead")
+            else:
+                data.update(new_dict)
+                with open("data.json", "w") as data_file:
+                    json.dump(data, data_file, indent=4)
 
-            messagebox.showinfo(title=website, message="Website details added!")
+                messagebox.showinfo(title=website, message="Website details added!")
 
         finally:
             website_entry.delete(0, END)
@@ -47,9 +49,7 @@ def save_password():
             website_entry.focus()
 
 def search():
-    website = website_entry.get()
-
-
+    website = website_entry.get().title()
 
     try:
         with open("data.json", "r") as data_file:
@@ -65,14 +65,12 @@ def search():
         messagebox.showerror(title="Error", message="Please add website details to use the search functionality")
 
     else:
-        username = [data[datum]["username"] for datum in data if datum == website]
-        password = [data[datum]["password"] for datum in data if datum == website]
-
-
-        if len(username) == 0:
-            messagebox.showerror(title="Error", message=f"No details found for {website}")
+        if website in data:
+            username = data[website]["username"]
+            password = data[website]["password"]
+            messagebox.showinfo(title=website, message=f"Username: {username}\nPassword: {password}")
         else:
-            messagebox.showinfo(title=website, message=f"Username: {username[0]}\nPassword: {password[0]}")
+            messagebox.showerror(title="Error", message=f"No details found for {website}")
 
     finally:
         website_entry.delete(0, END)
@@ -121,7 +119,7 @@ username_label = Label(text="Email/Username:", font=("arial", 12, "normal"), bg=
 username_label.grid(column=0, row=3)
 
 username_entry = Entry(width=59, font=("arial", 10, "normal"))
-username_entry.insert(0, "mira.ikechukwu15@gmail.com")
+username_entry.insert(0, "mia@gmail.com")
 username_entry.grid(column=1, row=3, columnspan=2)
 
 password_label = Label(text="Password:", font=("arial", 12, "normal"), bg=BG, fg=PURPLE, pady=6)
